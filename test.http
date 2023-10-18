@@ -1,0 +1,24 @@
+GET localhost:9090/todos
+
+###
+POST localhost:9090/todos
+Content-Type: application/json
+
+{
+  "name": "bvfbejhgbr hbghrebgbkegnkjnkkdfkbfdlkgnefknfkdgkrejgheflkgbfdjgfdghrgbkfngkregkjreghrehgrehgreughregregeruhgireuhg",
+  "description": "desc",
+  "tasks": [
+    {
+      "name": "task11",
+      "description": "desc2"
+    },
+    {
+      "name": "task12",
+      "description": "desc2"
+    }
+  ]
+}
+
+
+###
+DELETE localhost:9090/todos/6

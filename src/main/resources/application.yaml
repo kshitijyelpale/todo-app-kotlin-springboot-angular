@@ -1,0 +1,25 @@
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: todo
+    password: todo
+    driverClassName: org.postgresql.Driver
+  jpa:
+    database: postgresql
+    hibernate:
+      ddl-auto: validate
+    properties:           # <-- enable to show SQL
+      hibernate:          # <-- enable to show SQL
+        format_sql: true  # <-- enable to show SQL
+    show-sql: true        # <-- enable to show SQL
+    open-in-view: false
+  flyway:
+    locations: classpath:db/migration
+
+server:
+  port: 9090
+
+logging:
+  level:
+    com.example: TRACE
