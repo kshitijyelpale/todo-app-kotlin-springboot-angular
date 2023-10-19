@@ -11,12 +11,14 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Set up JDK
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v3
       with:
-        java-version: 20  # Use the version compatible with your Spring Boot project
+        distribution: 'temurin'
+        java-version: '21'
+        check-latest: true
 
     - name: Build with Gradle
       run: ./gradlew build
@@ -24,7 +26,7 @@ jobs:
     - name: Start PostgreSQL container
       run: |
         docker run --name postgres:15 -e POSTGRES_USER=todo -e POSTGRES_PASSWORD=todo -p 5432:5432 -d postgres
-        sleep 5  # Give PostgreSQL some time to start
+        sleep 5
 
     - name: Run Tests
       run: ./gradlew test
