@@ -11,7 +11,7 @@ plugins {
     kotlin("jvm") version "1.9.0"
     kotlin("plugin.spring") version "1.9.0"
     kotlin("plugin.jpa") version "1.9.0"
-	kotlin("kapt") version "1.9.0"
+//	kotlin("kapt") version "1.9.0"
 }
 
 val springBootVersion = "3.1.4"
@@ -32,7 +32,7 @@ repositories {
 extra["snippetsDir"] = file("build/generated-snippets")
 
 dependencies {
-	kapt("org.springframework.boot:spring-boot-configuration-processor:$springBootVersion")
+//	kapt("org.springframework.boot:spring-boot-configuration-processor:$springBootVersion")
 
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion")
@@ -45,7 +45,7 @@ dependencies {
 	implementation("org.flywaydb:flyway-core")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("io.github.microutils:kotlin-logging:2.1.23")
-	implementation("au.com.console:kotlin-jpa-specification-dsl:2.0.0")
+//	implementation("au.com.console:kotlin-jpa-specification-dsl:2.0.0")
 //	implementation("org.springframework.data:spring-data-rest-hal-explorer")
 
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
