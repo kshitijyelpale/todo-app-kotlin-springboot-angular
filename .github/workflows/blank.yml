@@ -23,7 +23,7 @@ jobs:
 
     - name: Start PostgreSQL container
       run: |
-        docker run --name postgres -e POSTGRES_PASSWORD=mysecretpassword -p 5432:5432 -d postgres
+        docker run --name postgres:15 -e POSTGRES_USER=todo -e POSTGRES_PASSWORD=todo -p 5432:5432 -d postgres
         sleep 5  # Give PostgreSQL some time to start
 
     - name: Run Tests
