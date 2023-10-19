@@ -1,5 +1,6 @@
 package com.example.todoapp.service
 
+import com.example.todoapp.dao.model.Task
 import com.example.todoapp.dao.model.Todo
 import com.example.todoapp.dao.resource.TaskResource
 import com.example.todoapp.exception.NoSuchElementFoundException
@@ -10,22 +11,17 @@ interface ITaskService {
 
     fun findAllTasks(): List<TaskResource>
 
-    @Throws(NoSuchElementFoundException::class)
-    fun findTaskById(id: Long): TaskResource
+    fun findAllTasksByTodoId(id: Long): Set<Task>
 
     @Transactional
     @Throws(ServiceException::class)
-    fun createTasks(resources: Set<TaskResource>, todo: Todo): Set<TaskResource>
+    fun createTasks(resources: Set<TaskResource>, todo: Todo): Set<Task>
 
     @Transactional
     @Throws(NoSuchElementFoundException::class, ServiceException::class)
-    fun updateTasks(resources: Set<TaskResource>): Set<TaskResource>
+    fun updateTasks(resources: Set<TaskResource>): Set<Task>
 
     @Transactional
     @Throws(NoSuchElementFoundException::class, ServiceException::class)
-    fun deleteTaskByTaskId(id: Long): Boolean
-
-    @Transactional
-    @Throws(NoSuchElementFoundException::class, ServiceException::class)
-    fun deleteTaskByTodoId(id: Long): Boolean
+    fun deleteTasksByTodoId(id: Long): Boolean
 }

@@ -6,9 +6,9 @@ import jakarta.validation.constraints.NotBlank
 data class TodoResource(
     val id: Long,
     @NotBlank
-    @Max(value = 100)
+    @Max(value = 20)
     val name: String,
     @Max(value = 100)
-    val description: String,
+    val description: String? = null,
     var tasks: MutableSet<TaskResource> = hashSetOf()
 )

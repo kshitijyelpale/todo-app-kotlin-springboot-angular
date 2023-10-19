@@ -5,15 +5,15 @@ POST localhost:9090/todos
 Content-Type: application/json
 
 {
-  "name": "bvfbejhgbr hbghrebgbkegnkjnkkdfkbfdlkgnefknfkdgkrejgheflkgbfdjgfdghrgbkfngkregkjreghrehgrehgreughregregeruhgireuhg",
+  "name": "todo",
   "description": "desc",
   "tasks": [
     {
-      "name": "task11",
+      "name": "task100",
       "description": "desc2"
     },
     {
-      "name": "task12",
+      "name": "task200",
       "description": "desc2"
     }
   ]

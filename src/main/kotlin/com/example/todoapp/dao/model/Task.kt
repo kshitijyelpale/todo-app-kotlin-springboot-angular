@@ -15,12 +15,12 @@ data class Task(
 
     @Column(nullable = false)
     @NotBlank
-    @Max(value = 100)
+    @Max(value = 50)
     var name: String,
 
     @Column(nullable = true)
     @Max(value = 500)
-    var description: String,
+    var description: String? = null,
 
     @ManyToOne
     @JoinColumn(name = "todo_id", nullable = false)

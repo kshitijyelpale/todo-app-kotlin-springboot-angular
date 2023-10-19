@@ -15,12 +15,12 @@ data class Todo(
 
     @Column(nullable = false)
     @NotBlank
-    @Max(value = 100)
+    @Max(value = 20)
     var name: String,
 
     @Column(nullable = true)
     @Max(value = 500)
-    var description: String,
+    var description: String? = null,
 
     @OneToMany(mappedBy = "todo", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     var tasks: MutableSet<Task> = hashSetOf()

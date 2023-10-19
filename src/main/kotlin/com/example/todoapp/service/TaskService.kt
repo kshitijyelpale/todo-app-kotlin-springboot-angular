@@ -28,42 +28,45 @@ internal class TaskService(
     private val logger = KotlinLogging.logger {}
 
     override fun findAllTasks(): List<TaskResource> {
-        logger.info { "retrieving all tasks" }
+        logger.debug { "Retrieving all tasks" }
 
         return taskRepository.findAll().map { it.toResource() }
     }
 
-    @Throws(NoSuchElementFoundException::class)
-    override fun findTaskById(id: Long): TaskResource {
-        logger.info { "retrieving task $id" }
+    override fun findAllTasksByTodoId(id: Long): Set<Task> {
+        logger.debug { "Retrieving tasks for todo $id" }
 
-        return fetchTaskById(id).toResource()
+        return taskRepository.findAllByTodoId(id).toSet()
     }
 
-    override fun createTasks(resources: Set<TaskResource>, todo: Todo): Set<TaskResource> {
+    override fun createTasks(resources: Set<TaskResource>, todo: Todo): Set<Task> {
         try {
+            logger.debug { "Creating tasks for todo ${todo.id}" }
             val tasks = resources.map { it.toModel() }
             tasks.forEach { it.todo = todo }
 
-            val list = taskRepository.saveAllAndFlush(tasks)
-            return list.map { it.toResource() }.toMutableSet()
+            return taskRepository.saveAllAndFlush(tasks).toSet()
         } catch (e: Exception) {
-            val message = "Task creation failed: ${e.message}"
+            val message = "Tasks creation failed: ${e.message}"
             logger.error { message }
             throw ServiceException(message)
         }
     }
 
-    override fun updateTasks(resources: Set<TaskResource>): Set<TaskResource> {
+    override fun updateTasks(resources: Set<TaskResource>): Set<Task> {
         val message = "Tasks update failed"
 
         return accessLock.withLock {
             val tasks = transactionTemplate.execute {
                 try {
+                    logger.debug { "Updating tasks" }
                     resources.map {
                         val existingTask = fetchTaskById(it.id)
-                        existingTask.name = it.name
-                        existingTask.description = it.description
+                        if (it.name.isNotBlank()) {
+                            existingTask.name = it.name
+                        }
+
+                        existingTask.description = it.description?.ifEmpty { null }
                         taskRepository.save(existingTask)
                     }
                 } catch (e: Exception) {
@@ -71,27 +74,17 @@ internal class TaskService(
                     throw ServiceException(message)
                 }
             }
-            tasks?.map { it.toResource() }?.toMutableSet() ?: throw ServiceException(message)
+            tasks?.toSet() ?: throw ServiceException(message)
         }
     }
 
-    override fun deleteTaskByTaskId(id: Long): Boolean {
+    override fun deleteTasksByTodoId(id: Long): Boolean {
         return try {
-            taskRepository.deleteById(id)
-            true
-        } catch (e: Exception) {
-            val message = "Deletion of task having id $id failed: ${e.message}"
-            logger.error { message }
-            throw ServiceException(message)
-        }
-    }
-
-    override fun deleteTaskByTodoId(id: Long): Boolean {
-        return try {
+            logger.debug { "Deleting tasks for todo $id" }
             taskRepository.deleteAllByTodoId(id)
             true
         } catch (e: Exception) {
-            val message = "Deletion of tasks having todo id $id failed: ${e.message}"
+            val message = "Deletion of task having id $id failed: ${e.message}"
             logger.error { message }
             throw ServiceException(message)
         }

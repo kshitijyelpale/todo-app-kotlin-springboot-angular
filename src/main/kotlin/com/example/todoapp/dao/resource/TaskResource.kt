@@ -6,9 +6,9 @@ import jakarta.validation.constraints.NotBlank
 data class TaskResource(
     val id: Long,
     @NotBlank
-    @Max(value = 100)
+    @Max(value = 50)
     val name: String,
     @Max(value = 500)
-    val description: String,
+    val description: String? = null,
     val todoId: Long? = null,
 )

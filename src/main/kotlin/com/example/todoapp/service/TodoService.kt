@@ -1,19 +1,18 @@
 package com.example.todoapp.service
 
+import com.example.todoapp.dao.model.Task
 import com.example.todoapp.dao.model.Todo
 import com.example.todoapp.dao.model.toModel
-import com.example.todoapp.dao.model.toResource
-import com.example.todoapp.dao.repository.TaskRepository
 import com.example.todoapp.dao.repository.TodoRepository
-import com.example.todoapp.dao.resource.TaskResource
 import com.example.todoapp.dao.resource.TodoResource
 import com.example.todoapp.exception.NoSuchElementFoundException
 import com.example.todoapp.exception.ServiceException
 import mu.KotlinLogging
-import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.hateoas.CollectionModel
+import org.springframework.hateoas.EntityModel
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
@@ -25,54 +24,55 @@ import kotlin.concurrent.withLock
 @Transactional
 internal class TodoService(
     private val todoRepository: TodoRepository,
-    private val taskRepository: TaskRepository,
     private val taskService: ITaskService,
-    private val transactionTemplate: TransactionTemplate
+    private val transactionTemplate: TransactionTemplate,
+    private val todoResourceAssembler: TodoResourceAssembler
 ) : ITodoService {
 
     private val accessLock = ReentrantLock()
 
     private val logger = KotlinLogging.logger {}
 
-    override fun findAllTodos(pageable: PageRequest, filter: String): PageImpl<TodoResource> {
+    override fun findAllTodos(pageable: PageRequest, filter: String): CollectionModel<EntityModel<TodoResource>> {
         val todoPage = todoRepository.findAll(filterBy(filter), pageable)
-        val content = todoPage.content.map { it.toResource() }
-        return PageImpl(content, todoPage.pageable, todoPage.totalElements)
+        return todoResourceAssembler.decorateWithLinks(todoPage, filter)
     }
 
     @Throws(NoSuchElementFoundException::class)
-    override fun findTodoById(id: Long): TodoResource {
+    override fun findTodoById(id: Long): Todo {
         val todo = fetchTodoById(id)
-        todo.tasks = taskRepository.findAllByTodoId(todo.id).toMutableSet()
-        return todo.toResource()
+        todo.tasks = taskService.findAllTasksByTodoId(id) as MutableSet<Task>
+        return todo
     }
 
-    override fun createTodo(resource: TodoResource): TodoResource {
+    override fun createTodo(resource: TodoResource): Todo {
         val todo = resource.toModel()
         val save = todoRepository.save(todo)
-        val todoResource = save.toResource()
         if (resource.tasks.isNotEmpty()) {
-            todoResource.tasks = taskService.createTasks(resource.tasks, save).toMutableSet()
+            save.tasks = taskService.createTasks(resource.tasks, save) as MutableSet<Task>
         }
 
-        return todoResource
+        return save
     }
 
-    override fun updateTodo(id: Long, resource: TodoResource): TodoResource {
+    override fun updateTodo(id: Long, resource: TodoResource): Todo {
         val message = "Todo with id $id update failed"
 
         return accessLock.withLock {
             val updatedTodo = transactionTemplate.execute {
                 try {
+                    logger.debug { "Updating todo $id" }
                     val existingTodo = fetchTodoById(id)
-                    existingTodo.name = resource.name
-                    existingTodo.description = resource.description
+                    if (resource.name.isNotBlank()) {
+                        existingTodo.name = resource.name
+                    }
+                    existingTodo.description = resource.description?.ifEmpty { null }
                     val savedTodo = todoRepository.save(existingTodo)
                     if (resource.tasks.isNotEmpty()) {
-                        taskService.updateTasks(resource.tasks)
+                        savedTodo.tasks = taskService.updateTasks(resource.tasks) as MutableSet<Task>
                     }
 
-                    savedTodo.toResource()
+                    savedTodo
                 } catch (e: Exception) {
                     logger.error(message, e)
                     throw ServiceException(message)
@@ -84,7 +84,8 @@ internal class TodoService(
 
     override fun deleteTodoById(id: Long): Boolean {
         return try {
-            taskRepository.deleteAllByTodoId(id)
+            logger.debug { "Deleting todo $id" }
+            taskService.deleteTasksByTodoId(id)
             todoRepository.deleteById(id)
             true
         } catch (e: Exception) {
