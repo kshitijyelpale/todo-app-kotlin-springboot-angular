@@ -1,0 +1,34 @@
+.custom-confirm-dialog {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.dialog-title {
+  font-size: 24px;
+  color: #007bff;
+}
+
+.dialog-message {
+  font-size: 18px;
+  margin: 20px 0;
+}
+
+.cancel-button {
+  background-color: #ddd;
+  color: #333;
+  margin-right: 10px;
+}
+
+.confirm-button {
+  background-color: #e74c3c;
+  color: #fff;
+  margin-left: 10px;
+}
+
+.confirm-button:hover {
+  background-color: #c0392b;
+}

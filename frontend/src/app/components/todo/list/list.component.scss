@@ -1,4 +1,3 @@
-/* Center the content */
 .search-container {
   display: flex;
   flex-direction: column;
@@ -8,29 +7,24 @@
   gap: 16px; /* Space between elements */
 }
 
-/* Style the search box and create button row */
 .search-row {
   display: flex;
   justify-content: center;
-  gap: 16px; /* Space between elements */
+  gap: 16px;
 }
 
-/* Add border and space around cards */
 .todo-card {
   border: 1px solid #ccc;
   margin: 8px;
   padding: 8px;
   display: inline-block;
-  width: 300px; /* Adjust the width as needed */
+  width: 300px;
 }
 
-/* Center card content */
 .todo-card-content {
   text-align: center;
 }
 
-/* Adjust button alignment inside the card */
 .mat-card-actions button {
   margin-right: 8px;
 }
-

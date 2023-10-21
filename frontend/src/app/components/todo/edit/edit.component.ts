@@ -1,26 +1,30 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Location } from '@angular/common';
+import { MatDialog } from '@angular/material/dialog';
 
-import {ActivatedRoute, Router} from '@angular/router';
+import { delay, EMPTY, Observable, of, tap } from 'rxjs';
 
-import { Todo } from 'src/app/models/todo.model';
-import { Task } from 'src/app/models/task.model';
-import { TodoService } from 'src/app/services/todo.service';
+import { Todo, Task, LinkResource } from 'src/app/models';
+import { TodoService } from 'src/app/services';
 
 @Component({
-  selector: 'app-edit',
+  selector: 'app-todo-edit',
   templateUrl: './edit.component.html',
   styleUrls: ['./edit.component.scss']
 })
 export class EditComponent implements OnInit {
-  todo = {} as Todo;
-  task = {} as Task;
+  todo$: Observable<Todo> = EMPTY;
 
   isCreate = false;
   todoId = 0;
+  loading = false;
 
   constructor(
     private readonly route: ActivatedRoute,
     private readonly router: Router,
+    private readonly location: Location,
+    private readonly dialog: MatDialog,
     private readonly todoService: TodoService
   ) {
   }
@@ -29,45 +33,47 @@ export class EditComponent implements OnInit {
   ngOnInit(): void {
     this.todoId = this.route.snapshot.params['todoId'] as number;
     if (this.todoId) {
-      this.todoService.getTodoById(this.todoId).subscribe((data) => {
-        this.todo = data;
-      });
+      this.todo$ = this.todoService.getTodoById(this.todoId).pipe(
+        delay(200),
+        tap(() => this.loading = false)
+      );
+      this.loading = true;
+      return;
     }
-    else {
-      this.isCreate = true;
-    }
+    this.isCreate = true;
+    this.todo$ = of({
+      id: 0,
+      name: '',
+      description: '',
+      tasks: [] as Task[],
+      _links: {} as LinkResource
+    });
   }
 
-  addTask() {
+  addTask(todo: Todo) {
+    console.info(todo);
     const newTask = { id: 0, name: '', description: '', completed: false };
-    this.todo.tasks.push({ ...newTask });
+    todo.tasks.push(newTask);
   }
 
-  removeTask(index: number) {
-    this.todo.tasks.splice(index, 1);
+  removeTask(todo: Todo, index: number) {
+    todo.tasks.splice(index, 1);
   }
 
-  createTodo() {
-    // Implement logic to save the todo
+  saveTodo(todo: Todo) {
+
+    this.todo$ = this.todoService.saveTodo(todo).pipe(
+      tap(() => this.router.navigate(['/todos']).then())
+    );
   }
 
-  saveTodo() {
-    this.todoService.saveTodo(this.todo).subscribe((data) => {
-      this.todo = data;
-      this.router.navigate(['/todos']).then();
-    });
+  updateTodo(todo: Todo) {
+    this.todo$ = this.todoService.updateTodo(todo).pipe(
+      tap(() => this.location.back())
+    );
   }
 
-  updateTodo() {
-    this.todoService.updateTodo(this.todo).subscribe((data) => {
-      this.todo = data;
-      this.router.navigate(['/todos']).then();
-    });
-  }
-
-  deleteTodo() {
-    this.todoService.deleteTodo(this.todo.id).subscribe((data) => {
-      this.router.navigate(['/todos']).then();
-    });
+  goBack() {
+    this.location.back();
   }
 }

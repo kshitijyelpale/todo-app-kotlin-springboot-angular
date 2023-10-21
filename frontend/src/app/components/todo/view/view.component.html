@@ -1,0 +1,35 @@
+<mat-card class="view-todo-card" *ngIf="todo$ | async as todo">
+  <ng-container *ngIf="!loading">
+    <div class="center-content">
+      <button mat-raised-button (click)="editTodo(todo)">Edit</button>
+      <mat-card-title>{{ 'View Todo' }}</mat-card-title>
+      <button mat-raised-button (click)="confirmDeletion(todo)">Delete</button>
+    </div>
+
+    <mat-card-content>
+      <div class="todo-details">
+        <div class="todo-property">
+          <strong>Name:</strong> {{ todo.name }}
+        </div>
+        <div class="todo-property">
+          <strong>Description:</strong> {{ todo.description }}
+        </div>
+        <h3>Tasks</h3>
+        <div *ngFor="let task of todo.tasks; let i = index" class="task-item" [class.completed]="task.completed">
+          <mat-checkbox [(ngModel)]="task.completed" name="taskCompleted-{{i}}"></mat-checkbox>
+
+          <div class="task-property">
+            <strong>Name:</strong> {{ task.name }}
+          </div>
+
+          <div class="task-property">
+            <strong>Description:</strong> {{ task.description }}
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </ng-container>
+</mat-card>
+<div class="spinner-container" *ngIf="loading">
+  <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+</div>

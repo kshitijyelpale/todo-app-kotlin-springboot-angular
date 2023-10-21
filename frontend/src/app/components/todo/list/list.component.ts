@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 
 import { Todo } from 'src/app/models/todo.model';
 import { TodoService } from 'src/app/services/todo.service';
+import { ConfirmationDialogComponent}  from '../../confirmation-dialog/confirmation-dialog.component';
 
 @Component({
-  selector: 'app-list',
+  selector: 'app-todo-list',
   templateUrl: './list.component.html',
   styleUrls: ['./list.component.scss']
 })
@@ -16,33 +18,45 @@ export class ListComponent implements OnInit {
 
   constructor(
     private readonly router: Router,
+    private readonly dialog: MatDialog,
     private readonly todoService: TodoService
   ) { }
 
   ngOnInit() {
-    // Fetch todos from your service and populate the 'todos' array.
     this.todoService.getTodos().subscribe((data) => {
       this.todos = data?._embedded?.todoResources;
       this.filteredTodos = this.todos;
     });
   }
 
-  searchTodos(event: Event) {
+  searchTodos(event: Event): void {
     this.filteredTodos = this.todos.filter(todo =>
       todo.name.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
   }
 
-  createTodo() {
-    this.router.navigate(['/todos/create']).then();
+  createTodo(): void {
+    this.router.navigate(['todos', 'create']).then();
   }
 
-  editTodo(todo: Todo) {
-    this.router.navigate(['/todos/', todo.id]).then();
+  viewTodo(todo: Todo): void {
+    this.router.navigate(['todos', todo.id, 'view']).then();
   }
 
-  deleteTodo(todo: Todo) {
-    this.todoService.deleteTodo(todo.id).subscribe((data) => {
+  confirmDeletion(todo: Todo) {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: 'Are you sure you want to delete this Todo?'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === true) {
+        this.deleteTodo(todo);
+      }
+    });
+  }
+
+  deleteTodo(todo: Todo): void {
+    this.todoService.deleteTodo(todo.id).subscribe(() => {
       this.ngOnInit();
     });
   }

@@ -1,42 +1,54 @@
-<mat-card class="create-todo-card">
-  <div class="center-content">
-    <ng-container *ngIf="isCreate">
-      <button mat-raised-button (click)="saveTodo()">Save</button>
-    </ng-container>
-    <ng-container *ngIf="!isCreate">
-      <button mat-raised-button (click)="updateTodo()">Update</button>
-    </ng-container>
-    <mat-card-title>{{ isCreate ? 'Create a New Todo' : 'Edit Todo' }}</mat-card-title>
-    <button mat-raised-button (click)="deleteTodo()">Delete</button>
-  </div>
+<mat-card class="create-todo-card" *ngIf="todo$ | async as todo">
+  <ng-container *ngIf="!loading">
+    <div class="center-content">
+      <ng-container *ngIf="isCreate">
+        <button mat-raised-button (click)="saveTodo(todo)" [disabled]="todoForm.invalid">Save</button>
+      </ng-container>
+      <ng-container *ngIf="!isCreate">
+        <button mat-raised-button (click)="updateTodo(todo)">Save</button>
+      </ng-container>
+      <mat-card-title>{{ isCreate ? 'Create a New Todo' : 'Edit Todo' }}</mat-card-title>
+      <button mat-raised-button (click)="goBack()">Back</button>
+    </div>
 
-  <mat-card-content>
-    <form (ngSubmit)="createTodo()" #todoForm="ngForm">
-      <mat-form-field class="full-width">
-        <input matInput placeholder="Todo Name" name="name" [(ngModel)]="todo.name" required maxlength="20"/>
-      </mat-form-field>
-
-      <mat-form-field class="full-width">
-        <textarea matInput placeholder="Description" name="description" [(ngModel)]="todo.description"
-                  maxlength="500"></textarea>
-      </mat-form-field>
-
-      <h3>Tasks</h3>
-      <div *ngFor="let task of todo.tasks; let i = index" class="task-item" [class.completed]="task.completed">
-        <mat-checkbox [(ngModel)]="task.completed" name="taskCompleted-{{i}}"></mat-checkbox>
+    <mat-card-content>
+      <form #todoForm="ngForm">
         <mat-form-field class="full-width">
-          <input matInput placeholder="Task Name" name="taskName-{{i}}" [(ngModel)]="task.name"/>
+          <input matInput placeholder="Todo Name" name="name" [(ngModel)]="todo.name" required maxlength="50"
+                 #nameField="ngModel"/>
+          <mat-error *ngIf="nameField.invalid && (nameField.dirty || nameField.touched)">
+            <span *ngIf="nameField.errors && nameField.errors['required']">Todo name is required.</span>
+          </mat-error>
         </mat-form-field>
+
         <mat-form-field class="full-width">
-          <textarea matInput placeholder="Task Description" name="taskDescription-{{i}}" [(ngModel)]="task.description"></textarea>
+          <textarea matInput placeholder="Description" name="description" [(ngModel)]="todo.description"
+                    maxlength="500"></textarea>
         </mat-form-field>
-        <button mat-icon-button (click)="removeTask(i)">
-          <mat-icon>remove_circle_outline</mat-icon>
-        </button>
-      </div>
 
+        <h3>Tasks</h3>
+        <div *ngFor="let task of todo.tasks; let i = index" class="task-item">
+          <mat-form-field class="full-width">
+            <input matInput placeholder="Task Name" name="taskName-{{i}}" [(ngModel)]="task.name" required
+                   maxlength="50" #taskNameField="ngModel" />
+            <mat-error *ngIf="taskNameField.invalid && (taskNameField.dirty || taskNameField.touched)">
+              <span *ngIf="taskNameField.errors && taskNameField.errors['required']">Task name is required.</span>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field class="full-width">
+            <textarea matInput placeholder="Task Description" name="taskDescription-{{i}}"
+                      [(ngModel)]="task.description"></textarea>
+          </mat-form-field>
+          <button mat-icon-button (click)="removeTask(todo, i)">
+            <mat-icon>remove_circle_outline</mat-icon>
+          </button>
+        </div>
 
-      <button mat-raised-button (click)="addTask()">Add Task</button>
-    </form>
-  </mat-card-content>
+        <button mat-raised-button (click)="addTask(todo)">Add Task</button>
+      </form>
+    </mat-card-content>
+  </ng-container>
 </mat-card>
+<div class="spinner-container" *ngIf="loading">
+  <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+</div>
