@@ -1,0 +1,23 @@
+<div class="search-container">
+  <div class="search-row">
+    <mat-form-field>
+      <input matInput placeholder="Search Todo" [(ngModel)]="searchTerm" (keyup)="searchTodos($event)" />
+    </mat-form-field>
+    <button mat-raised-button (click)="createTodo()">Create Todo</button>
+  </div>
+
+  <div class="todo-cards">
+    <mat-card class="todo-card" *ngFor="let todo of filteredTodos">
+      <mat-card-header>
+        <mat-card-title>{{ todo.name }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content class="todo-card-content">
+        <p>{{ todo.description }}</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button (click)="editTodo(todo)">Edit</button>
+        <button mat-button (click)="deleteTodo(todo)">Delete</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

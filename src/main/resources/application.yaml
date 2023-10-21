@@ -9,10 +9,10 @@ spring:
     database: postgresql
     hibernate:
       ddl-auto: validate
-    properties:           # <-- enable to show SQL
-      hibernate:          # <-- enable to show SQL
-        format_sql: true  # <-- enable to show SQL
-    show-sql: true        # <-- enable to show SQL
+#    properties:           # <-- enable to show SQL
+#      hibernate:          # <-- enable to show SQL
+#        format_sql: true  # <-- enable to show SQL
+#    show-sql: true        # <-- enable to show SQL
     open-in-view: false
   flyway:
     locations: classpath:db/migration

@@ -1,0 +1,27 @@
+.create-todo-card {
+  max-width: 500px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 8px 0;
+}
+
+.completed {
+  text-decoration: line-through;
+}
+
+.center-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}

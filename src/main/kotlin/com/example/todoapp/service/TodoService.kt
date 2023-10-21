@@ -1,6 +1,5 @@
 package com.example.todoapp.service
 
-import com.example.todoapp.dao.model.Task
 import com.example.todoapp.dao.model.Todo
 import com.example.todoapp.dao.model.toModel
 import com.example.todoapp.dao.repository.TodoRepository
@@ -41,7 +40,7 @@ internal class TodoService(
     @Throws(NoSuchElementFoundException::class)
     override fun findTodoById(id: Long): Todo {
         val todo = fetchTodoById(id)
-        todo.tasks = taskService.findAllTasksByTodoId(id) as MutableSet<Task>
+        todo.tasks = taskService.findAllTasksByTodoId(id).toMutableSet()
         return todo
     }
 
@@ -49,7 +48,7 @@ internal class TodoService(
         val todo = resource.toModel()
         val save = todoRepository.save(todo)
         if (resource.tasks.isNotEmpty()) {
-            save.tasks = taskService.createTasks(resource.tasks, save) as MutableSet<Task>
+            save.tasks = taskService.createTasks(resource.tasks, save).toMutableSet()
         }
 
         return save
@@ -69,7 +68,7 @@ internal class TodoService(
                     existingTodo.description = resource.description?.ifEmpty { null }
                     val savedTodo = todoRepository.save(existingTodo)
                     if (resource.tasks.isNotEmpty()) {
-                        savedTodo.tasks = taskService.updateTasks(resource.tasks) as MutableSet<Task>
+                        savedTodo.tasks = taskService.updateTasks(resource.tasks).toMutableSet()
                     }
 
                     savedTodo

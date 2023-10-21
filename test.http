@@ -21,4 +21,13 @@ Content-Type: application/json
 
 
 ###
-DELETE localhost:9090/todos/6
+DELETE localhost:9090/todos/2
+
+###
+POST localhost:9090/todos
+Content-Type: application/json
+
+{
+  "name": "todo",
+  "description": "desc"
+}

@@ -1,0 +1,42 @@
+<mat-card class="create-todo-card">
+  <div class="center-content">
+    <ng-container *ngIf="isCreate">
+      <button mat-raised-button (click)="saveTodo()">Save</button>
+    </ng-container>
+    <ng-container *ngIf="!isCreate">
+      <button mat-raised-button (click)="updateTodo()">Update</button>
+    </ng-container>
+    <mat-card-title>{{ isCreate ? 'Create a New Todo' : 'Edit Todo' }}</mat-card-title>
+    <button mat-raised-button (click)="deleteTodo()">Delete</button>
+  </div>
+
+  <mat-card-content>
+    <form (ngSubmit)="createTodo()" #todoForm="ngForm">
+      <mat-form-field class="full-width">
+        <input matInput placeholder="Todo Name" name="name" [(ngModel)]="todo.name" required maxlength="20"/>
+      </mat-form-field>
+
+      <mat-form-field class="full-width">
+        <textarea matInput placeholder="Description" name="description" [(ngModel)]="todo.description"
+                  maxlength="500"></textarea>
+      </mat-form-field>
+
+      <h3>Tasks</h3>
+      <div *ngFor="let task of todo.tasks; let i = index" class="task-item" [class.completed]="task.completed">
+        <mat-checkbox [(ngModel)]="task.completed" name="taskCompleted-{{i}}"></mat-checkbox>
+        <mat-form-field class="full-width">
+          <input matInput placeholder="Task Name" name="taskName-{{i}}" [(ngModel)]="task.name"/>
+        </mat-form-field>
+        <mat-form-field class="full-width">
+          <textarea matInput placeholder="Task Description" name="taskDescription-{{i}}" [(ngModel)]="task.description"></textarea>
+        </mat-form-field>
+        <button mat-icon-button (click)="removeTask(i)">
+          <mat-icon>remove_circle_outline</mat-icon>
+        </button>
+      </div>
+
+
+      <button mat-raised-button (click)="addTask()">Add Task</button>
+    </form>
+  </mat-card-content>
+</mat-card>
