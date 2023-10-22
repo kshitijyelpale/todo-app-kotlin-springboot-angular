@@ -34,7 +34,7 @@ export class EditComponent implements OnInit {
     this.todoId = this.route.snapshot.params['todoId'] as number;
     if (this.todoId) {
       this.todo$ = this.todoService.getTodoById(this.todoId).pipe(
-        delay(200),
+        delay(200), // To observe the loading indicator
         tap(() => this.loading = false)
       );
       this.loading = true;

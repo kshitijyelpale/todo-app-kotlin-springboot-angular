@@ -31,7 +31,7 @@ export class ViewComponent implements OnInit {
   ngOnInit(): void {
     this.todoId = this.route.snapshot.params['todoId'] as number;
     this.todo$ = this.todoService.getTodoById(this.todoId).pipe(
-      delay(500), // To observe the loading indicator
+      delay(200), // To observe the loading indicator
       map((todo) => {
         todo.tasks = todo.tasks.sort((a, b) => a.completed === b.completed ? 0 : a.completed ? 1 : -1);
         return todo;

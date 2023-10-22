@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 
-import {catchError, EMPTY, forkJoin, map, switchMap, take, tap} from 'rxjs';
+import { catchError, EMPTY, forkJoin, map, take, tap } from 'rxjs';
 
 import { Todo } from 'src/app/models/todo.model';
 import { TodoService, SnackbarService } from 'src/app/services';
