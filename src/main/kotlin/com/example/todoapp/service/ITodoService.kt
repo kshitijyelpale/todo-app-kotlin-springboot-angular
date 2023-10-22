@@ -22,6 +22,8 @@ interface ITodoService {
     @Throws(ServiceException::class, NoSuchElementException::class)
     fun updateTodo(id: Long, resource: TodoResource): Todo
 
+    fun getTotalCountOfTodos(): Long
+
     @Transactional
     @Throws(ServiceException::class, NoSuchElementException::class)
     fun deleteTodoById(id: Long): Boolean

@@ -11,5 +11,7 @@ interface TaskRepository : JpaRepository<Task, Long>, JpaSpecificationExecutor<T
 
     fun findAllByTodoId(todo: Long): List<Task>
 
+    fun findByIdAndTodoId(id: Long, todoId: Long): Task
+
     fun deleteAllByTodoId(todoId: Long)
 }

@@ -1,13 +1,16 @@
 <div class="search-container">
   <div class="search-row">
     <mat-form-field>
-      <input matInput placeholder="Search Todo" [(ngModel)]="searchTerm" (keyup)="searchTodos($event)" />
+      <input matInput placeholder="Search Todo" [(ngModel)]="searchTerm" (input)="searchTodos($event)" />
+      <mat-button-toggle matSuffix *ngIf="showResetButton" (click)="resetSearchTerm()">
+        <mat-icon>cancel</mat-icon>
+      </mat-button-toggle>
     </mat-form-field>
     <button mat-raised-button (click)="createTodo()">Create Todo</button>
   </div>
 
   <div class="todo-cards">
-    <mat-card class="todo-card" *ngFor="let todo of filteredTodos">
+    <mat-card class="todo-card" *ngFor="let todo of todos">
       <mat-card-header>
         <mat-card-title>{{ todo.name }}</mat-card-title>
       </mat-card-header>
@@ -21,3 +24,5 @@
     </mat-card>
   </div>
 </div>
+<mat-paginator [length]="totalCount" [pageSize]="pageSize" (page)="onPageChange($event)" aria-label="Select page">
+</mat-paginator>

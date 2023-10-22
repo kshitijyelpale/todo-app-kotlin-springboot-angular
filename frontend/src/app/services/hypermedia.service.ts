@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { EMPTY, Observable, throwError } from 'rxjs';
-import { LinkResource } from '../models/link.resource';
-import {T} from "@angular/cdk/keycodes";
-import {Todo} from "../models/todo.model";
+import { LinkResource } from '../models';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +17,7 @@ export class HypermediaService {
     return this.http.post<T>(link, body, { params } );
   }
 
-  update<T>(link: string, body: Record<string, unknown>, params?: HttpParams): Observable<T> {
+  update<T>(link: string, body?: Record<string, unknown>, params?: HttpParams): Observable<T> {
     return this.http.put<T>(link, body, { params });
   }
 

@@ -16,7 +16,9 @@
         </div>
         <h3>Tasks</h3>
         <div *ngFor="let task of todo.tasks; let i = index" class="task-item" [class.completed]="task.completed">
-          <mat-checkbox [(ngModel)]="task.completed" name="taskCompleted-{{i}}"></mat-checkbox>
+          <mat-checkbox
+            name="taskCompleted-{{i}}" [checked]="task.completed" (click)="updateTaskStatus(todo, task)">
+          </mat-checkbox>
 
           <div class="task-property">
             <strong>Name:</strong> {{ task.name }}

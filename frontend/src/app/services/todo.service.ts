@@ -3,8 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { HypermediaService } from './hypermedia.service';
-import { TodoResources } from '../models/todo.resources';
-import { Todo } from '../models/todo.model';
+import { TodoResources, Todo } from '../models';
 
 @Injectable({
   providedIn: 'root'
@@ -16,8 +15,13 @@ export class TodoService {
   constructor(private readonly hypermediaService: HypermediaService) {
   }
 
-  getTodos(): Observable<TodoResources> {
-    return this.hypermediaService.fetch<TodoResources>(this.apiRoot);
+  getTodos(filter: string = ''): Observable<TodoResources> {
+    const url = `${this.apiRoot}${filter ? `?${filter}` : ''}`;
+    return this.hypermediaService.fetch<TodoResources>(url);
+  }
+
+  getCountOfTodos(): Observable<number> {
+    return this.hypermediaService.fetch<number>(this.apiRoot + '/count');
   }
 
   getTodoById(id: number): Observable<Todo> {
@@ -34,6 +38,10 @@ export class TodoService {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     return this.hypermediaService.update<Todo>(`${this.apiRoot}/${todo.id}`, todo);
+  }
+
+  updateTaskStatus(todoId: number, taskId: number, status: boolean): Observable<boolean> {
+    return this.hypermediaService.update<boolean>(`${this.apiRoot}/${todoId}/task/${taskId}?status=${status}`);
   }
 
   deleteTodo(todoId: number): Observable<boolean> {

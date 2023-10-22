@@ -19,7 +19,9 @@ interface ITaskService {
 
     @Transactional
     @Throws(NoSuchElementFoundException::class, ServiceException::class)
-    fun updateTasks(resources: Set<TaskResource>): Set<Task>
+    fun updateTasks(resources: Set<TaskResource>, todo: Todo): Set<Task>
+
+    fun updateTaskStatus(todoId: Long, taskId: Long, completedStatus: Boolean): Boolean
 
     @Transactional
     @Throws(NoSuchElementFoundException::class, ServiceException::class)

@@ -68,7 +68,10 @@ internal class TodoService(
                     existingTodo.description = resource.description?.ifEmpty { null }
                     val savedTodo = todoRepository.save(existingTodo)
                     if (resource.tasks.isNotEmpty()) {
-                        savedTodo.tasks = taskService.updateTasks(resource.tasks).toMutableSet()
+                        savedTodo.tasks = taskService.updateTasks(resource.tasks, savedTodo).toMutableSet()
+                    } else {
+                        taskService.deleteTasksByTodoId(id)
+                        savedTodo.tasks = mutableSetOf()
                     }
 
                     savedTodo
@@ -79,6 +82,10 @@ internal class TodoService(
             }
             updatedTodo ?: throw ServiceException(message)
         }
+    }
+
+    override fun getTotalCountOfTodos(): Long {
+        return todoRepository.count()
     }
 
     override fun deleteTodoById(id: Long): Boolean {

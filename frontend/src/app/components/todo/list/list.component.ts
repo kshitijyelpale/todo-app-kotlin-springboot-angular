@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { PageEvent } from '@angular/material/paginator';
+
+import {catchError, EMPTY, forkJoin, map, switchMap, take, tap} from 'rxjs';
 
 import { Todo } from 'src/app/models/todo.model';
-import { TodoService } from 'src/app/services/todo.service';
-import { ConfirmationDialogComponent}  from '../../confirmation-dialog/confirmation-dialog.component';
+import { TodoService, SnackbarService } from 'src/app/services';
+import { ConfirmationDialogComponent }  from '../../confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-todo-list',
@@ -13,26 +16,34 @@ import { ConfirmationDialogComponent}  from '../../confirmation-dialog/confirmat
 })
 export class ListComponent implements OnInit {
   searchTerm = '';
+  showResetButton = false;
+  pageSize = 10;
+  currentPage = 0;
+  totalCount = 0;
   todos: Todo[] = [];
-  filteredTodos: Todo[] = [];
 
   constructor(
     private readonly router: Router,
     private readonly dialog: MatDialog,
-    private readonly todoService: TodoService
+    private readonly todoService: TodoService,
+    private readonly snackbar: SnackbarService
   ) { }
 
   ngOnInit() {
-    this.todoService.getTodos().subscribe((data) => {
-      this.todos = data?._embedded?.todoResources;
-      this.filteredTodos = this.todos;
-    });
+    this.searchTodos();
   }
 
-  searchTodos(event: Event): void {
-    this.filteredTodos = this.todos.filter(todo =>
-      todo.name.toLowerCase().includes(this.searchTerm.toLowerCase())
-    );
+  searchTodos(event?: Event): void {
+    const filter = `filter=${this.searchTerm.toLowerCase()}&page=${this.currentPage}&size=${this.pageSize}`;
+
+    forkJoin([
+      this.todoService.getTodos(filter).pipe(take(1)),
+      this.todoService.getCountOfTodos().pipe(take(1))
+    ]).subscribe(([todosResponse, count]) => {
+      this.todos = todosResponse?._embedded?.todoResources;
+      this.showResetButton = this.searchTerm.length > 0;
+      this.totalCount = count;
+    });
   }
 
   createTodo(): void {
@@ -48,16 +59,39 @@ export class ListComponent implements OnInit {
       data: 'Are you sure you want to delete this Todo?'
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result === true) {
-        this.deleteTodo(todo);
-      }
-    });
+    dialogRef.afterClosed().pipe(
+      take(1),
+      map((result) => {
+        if (result === true) {
+          this.deleteTodo(todo);
+        }
+      })
+    ).subscribe();
   }
 
   deleteTodo(todo: Todo): void {
-    this.todoService.deleteTodo(todo.id).subscribe(() => {
-      this.ngOnInit();
-    });
+    this.todoService.deleteTodo(todo.id).pipe(
+      take(1),
+      tap(() => {
+        this.ngOnInit();
+        this.snackbar.showSuccess('Todo successfully deleted!');
+      }),
+      catchError((err: Error) => {
+        this.snackbar.showError('Deletion failed - ' + err.message);
+        return EMPTY;
+      })
+    ).subscribe();
+  }
+
+  resetSearchTerm() {
+    this.searchTerm = '';
+    this.searchTodos();
+    this.showResetButton = false;
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.currentPage = event?.pageIndex;
+    this.pageSize = event?.pageSize;
+    this.searchTodos();
   }
 }

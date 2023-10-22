@@ -53,14 +53,18 @@ internal class TaskService(
         }
     }
 
-    override fun updateTasks(resources: Set<TaskResource>): Set<Task> {
+    override fun updateTasks(resources: Set<TaskResource>, todo: Todo): Set<Task> {
         val message = "Tasks update failed"
 
         return accessLock.withLock {
             val tasks = transactionTemplate.execute {
                 try {
                     logger.debug { "Updating tasks" }
-                    resources.map {
+                    val newTasks = resources.filter { it.id == 0L }
+                    if (newTasks.isNotEmpty()) {
+                        createTasks(newTasks.toSet(), todo)
+                    }
+                    resources.filter { it.id > 0 }.map {
                         val existingTask = fetchTaskById(it.id)
                         if (it.name.isNotBlank()) {
                             existingTask.name = it.name
@@ -75,6 +79,23 @@ internal class TaskService(
                 }
             }
             tasks?.toSet() ?: throw ServiceException(message)
+        }
+    }
+
+    override fun updateTaskStatus(todoId: Long, taskId: Long, completedStatus: Boolean): Boolean {
+        return try {
+            val task = taskRepository.findByIdAndTodoId(taskId, todoId)
+            task.completed = completedStatus
+            taskRepository.save(task)
+            true
+        } catch (e: Exception) {
+            val message = """
+                Task completed status update failed: taskId: $taskId, todoId: $todoId, status: $completedStatus - 
+                ${e.message}
+            """.trimIndent()
+
+            logger.error { message }
+            false
         }
     }
 

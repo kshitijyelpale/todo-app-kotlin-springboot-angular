@@ -17,9 +17,12 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ViewComponent } from './components/todo/view/view.component';
-import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
-import {MatDialog, MatDialogModule} from "@angular/material/dialog";
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import {MatButtonToggleModule} from "@angular/material/button-toggle";
+import {MatPaginatorModule} from "@angular/material/paginator";
 
 @NgModule({
   declarations: [
@@ -46,6 +49,9 @@ import {MatDialog, MatDialogModule} from "@angular/material/dialog";
     MatCheckboxModule,
     MatProgressSpinnerModule,
     MatDialogModule,
+    MatSnackBarModule,
+    MatButtonToggleModule,
+    MatPaginatorModule
   ],
   providers: [],
   bootstrap: [AppComponent]

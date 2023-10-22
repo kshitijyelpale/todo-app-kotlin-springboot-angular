@@ -18,9 +18,12 @@ data class Task(
     @Max(value = 50)
     var name: String,
 
-    @Column(nullable = true)
+    @Column
     @Max(value = 500)
     var description: String? = null,
+
+    @Column(nullable = false)
+    var completed: Boolean = false,
 
     @ManyToOne
     @JoinColumn(name = "todo_id", nullable = false)

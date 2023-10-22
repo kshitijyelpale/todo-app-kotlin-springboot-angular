@@ -10,5 +10,6 @@ data class TaskResource(
     val name: String,
     @Max(value = 500)
     val description: String? = null,
+    val completed: Boolean = false,
     val todoId: Long? = null,
 )
