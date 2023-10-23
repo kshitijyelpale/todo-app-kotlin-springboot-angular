@@ -60,9 +60,10 @@ internal class TaskService(
             val tasks = transactionTemplate.execute {
                 try {
                     logger.debug { "Updating tasks" }
+                    val updatedTasks = mutableSetOf<Task>()
                     val newTasks = resources.filter { it.id == 0L }
                     if (newTasks.isNotEmpty()) {
-                        createTasks(newTasks.toSet(), todo)
+                        updatedTasks.addAll(createTasks(newTasks.toSet(), todo))
                     }
                     resources.filter { it.id > 0 }.map {
                         val existingTask = fetchTaskById(it.id)
@@ -71,8 +72,9 @@ internal class TaskService(
                         }
 
                         existingTask.description = it.description?.ifEmpty { null }
-                        taskRepository.save(existingTask)
+                        updatedTasks.add(taskRepository.save(existingTask))
                     }
+                    updatedTasks
                 } catch (e: Exception) {
                     logger.error(message, e)
                     throw ServiceException(message)

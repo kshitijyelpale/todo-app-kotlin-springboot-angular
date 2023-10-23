@@ -53,6 +53,7 @@ dependencies {
 
 	runtimeOnly("org.postgresql:postgresql")
 
+	testImplementation("io.mockk:mockk:1.12.0")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.boot:spring-boot-testcontainers")
 	testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
@@ -60,7 +61,38 @@ dependencies {
 	testImplementation("org.testcontainers:postgresql")
 }
 
+node {
+	version.set("18.16.0")
+	npmVersion.set("9.5.1")
+	download.set(System.getProperty("os.arch") != "aarch64")
+	workDir.set(file("${project.buildDir}/frontend"))
+	npmWorkDir.set(file("${project.buildDir}/frontend"))
+	nodeProjectDir.set(file("${project.projectDir}/frontend"))
+}
+tasks.register<com.github.gradle.node.npm.task.NpmTask>("buildNpm") {
+	outputs.cacheIf { true }
+	args.set(listOf("run", "build"))
+	dependsOn("npm_install", "npm_lint", "npm_test")
+}
+
+tasks.register<com.github.gradle.node.npm.task.NpmTask>("npm_lint") {
+	args.set(listOf("run", "lint"))
+}
+
+tasks.register<com.github.gradle.node.npm.task.NpmTask>("npm_test") {
+	args.set(listOf("run", "test:ci"))
+}
+
+tasks.register<Copy>("copyWebApp") {
+	dependsOn("buildNpm")
+	description = "Copies built project to where it will be served"
+	from("$buildDir/frontend-dist")
+	into("$buildDir/resources/main/static/.")
+	outputs.cacheIf { true }
+}
+
 tasks.withType<KotlinCompile> {
+	dependsOn("copyWebApp")
 	kotlinOptions {
 		freeCompilerArgs += "-Xjsr305=strict"
 		jvmTarget = "20"
