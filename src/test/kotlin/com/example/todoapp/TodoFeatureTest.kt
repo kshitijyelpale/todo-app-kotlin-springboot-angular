@@ -45,7 +45,9 @@ class TodoFeatureTest : BaseFeatureTest() {
 
     @BeforeAll
     fun setUp() {
-        createTodos()
+        if (todoRepository.count() == 0L) {
+            this.createTodos()
+        }
     }
 
     @Test

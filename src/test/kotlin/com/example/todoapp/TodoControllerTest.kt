@@ -17,7 +17,9 @@ class TodoControllerTest : BaseFeatureTest() {
 
     @BeforeEach
     fun setUp() {
-        this.createTodos()
+        if (todoRepository.count() == 0L) {
+            this.createTodos()
+        }
     }
 
     @Test
