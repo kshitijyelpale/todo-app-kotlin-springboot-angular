@@ -17,10 +17,10 @@ services:
     networks:
       - todo-network
 
-  todo-app:
-    build: .
-    ports:
-      - "9090:9090"
-    container_name: "todo-app-0.0.1"
-    networks:
-      - todo-network
+#  todo-app:
+#    build: .
+#    ports:
+#      - "9090:9090"
+#    container_name: "todo-app-0.0.1"
+#    networks:
+#      - todo-network

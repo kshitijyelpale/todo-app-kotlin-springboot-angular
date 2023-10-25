@@ -15,4 +15,4 @@
 ### Improvements
 
 - Add authentication with Spring security
-- 
+- Increase the Test coverage
