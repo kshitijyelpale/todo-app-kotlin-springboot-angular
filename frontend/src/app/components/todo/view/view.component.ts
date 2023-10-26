@@ -36,13 +36,17 @@ export class ViewComponent implements OnInit {
         todo.tasks = todo.tasks.sort((a, b) => a.completed === b.completed ? 0 : a.completed ? 1 : -1);
         return todo;
       }),
-      tap(() => this.loading = false)
+      tap(() => this.loading = false),
+      catchError((err: Error) => {
+        this.snackbar.showError(`Error fetching todo ${this.todoId} - ` + err.message);
+        return EMPTY;
+      }),
     );
     this.loading = true;
   }
 
   editTodo(todo: Todo): void {
-    this.router.navigate(['todos', todo.id, 'edit']).then();
+    this.router.navigate(['todos', todo.id, 'edit']);
   }
 
   confirmDeletion(todo: Todo) {
@@ -68,7 +72,7 @@ export class ViewComponent implements OnInit {
         this.snackbar.showSuccess('Todo successfully deleted!');
       }),
       catchError((err: Error) => {
-        this.snackbar.showError('Deletion failed - ' + err.message);
+        this.snackbar.showError(`Todo ${todo.name} Deletion failed - ${err.message}`);
         return EMPTY;
       })
     ).subscribe();
@@ -84,8 +88,9 @@ export class ViewComponent implements OnInit {
           task.completed = !task.completed;
           todo.tasks = todo.tasks.sort((a, b) => a.completed === b.completed ? 0 : a.completed ? 1 : -1);
         }),
-        catchError(() => {
+        catchError((err: Error) => {
           task.completed = originalStatus;
+          this.snackbar.showError(`Todo ${todo.name} with task ${task.name} failed to update - ${err.message}`);
           return EMPTY;
         })
       ).subscribe();
