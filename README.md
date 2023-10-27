@@ -1,5 +1,3 @@
-# coding-challenge-ksitij
-
 ## Todo-app
 
 ### How to run
