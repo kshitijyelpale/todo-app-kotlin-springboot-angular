@@ -15,6 +15,7 @@ fun Task.toResource() = TaskResource(
     name = name,
     description = description,
     completed = completed,
+    dueDate = dueDate,
     todoId = todo?.id
 )
 
@@ -27,5 +28,6 @@ fun TaskResource.toModel() = Task(
     name = name,
     description = description,
     completed = completed,
+    dueDate = dueDate,
     todo = null
 )

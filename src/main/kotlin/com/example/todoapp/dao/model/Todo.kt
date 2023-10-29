@@ -33,15 +33,23 @@ data class Todo(
         other as Todo
 
         if (id != other.id) return false
+        if (name != other.name) return false
+        if (description != other.description) return false
+        if (tasks != other.tasks) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        return id.hashCode()
+        var result = id.hashCode()
+        result = 31 * result + name.hashCode()
+        result = 31 * result + (description?.hashCode() ?: 0)
+        result = 31 * result + tasks.hashCode()
+
+        return result
     }
 
     override fun toString(): String {
-        return "Todo(id=$id, name='$name', description='$description')"
+        return "Todo(id=$id, name='$name', description=$description, tasks=$tasks)"
     }
 }

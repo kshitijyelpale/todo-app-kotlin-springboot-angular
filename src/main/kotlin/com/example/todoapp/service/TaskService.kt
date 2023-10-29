@@ -13,6 +13,8 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
+import java.sql.Timestamp
+import java.time.Instant
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
@@ -85,19 +87,26 @@ internal class TaskService(
     }
 
     override fun updateTaskStatus(todoId: Long, taskId: Long, completedStatus: Boolean): Boolean {
-        return try {
-            val task = taskRepository.findByIdAndTodoId(taskId, todoId)
-            task.completed = completedStatus
-            taskRepository.save(task)
-            true
-        } catch (e: Exception) {
-            val message = """
-                Task completed status update failed: taskId: $taskId, todoId: $todoId, status: $completedStatus - 
-                ${e.message}
-            """.trimIndent()
+        return accessLock.withLock {
+            val saved = transactionTemplate.execute {
+                try {
+                    val task = taskRepository.findByIdAndTodoId(taskId, todoId)
+                        ?: throw NoSuchElementFoundException("Task not found")
 
-            logger.error { message }
-            false
+                    task.completed = completedStatus
+                    taskRepository.save(task)
+                    true
+                } catch (e: Exception) {
+                    val message = """
+                        Task completed status update failed: taskId: $taskId, todoId: $todoId, status: $completedStatus
+                         - ${e.message}
+                    """.trimIndent()
+
+                    logger.error { message }
+                    false
+                }
+            }
+            saved ?: throw ServiceException("Task update failed: todoId: $todoId, taskId: $taskId")
         }
     }
 
@@ -111,6 +120,10 @@ internal class TaskService(
             logger.error { message }
             throw ServiceException(message)
         }
+    }
+
+    override fun findOverDueTasks(): List<Task> {
+        return taskRepository.findAllByDueDateBefore(Timestamp.from(Instant.now()))
     }
 
     private fun fetchTaskById(id: Long): Task {

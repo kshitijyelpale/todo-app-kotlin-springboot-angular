@@ -2,6 +2,7 @@ package com.example.todoapp.service
 
 import com.example.todoapp.dao.model.Todo
 import com.example.todoapp.dao.model.toModel
+import com.example.todoapp.dao.model.toResource
 import com.example.todoapp.dao.repository.TodoRepository
 import com.example.todoapp.dao.resource.TodoResource
 import com.example.todoapp.exception.NoSuchElementFoundException
@@ -67,6 +68,7 @@ internal class TodoService(
                     }
                     existingTodo.description = resource.description?.ifEmpty { null }
                     val savedTodo = todoRepository.save(existingTodo)
+
                     if (resource.tasks.isNotEmpty()) {
                         savedTodo.tasks = taskService.updateTasks(resource.tasks, savedTodo).toMutableSet()
                     } else {
@@ -98,6 +100,12 @@ internal class TodoService(
             logger.error { "Deletion of todo having id $id failed: ${e.message}" }
             false
         }
+    }
+
+    override fun getDueDatedTodos(): List<TodoResource> {
+        val tasks = taskService.findOverDueTasks()
+
+        return tasks.mapNotNull { it.todo?.toResource() }
     }
 
     private fun fetchTodoById(id: Long): Todo {

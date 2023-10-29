@@ -51,4 +51,7 @@ class TodoController(
 
     @DeleteMapping("/{id}")
     fun deleteTodo(@PathVariable id: Long) = todoService.deleteTodoById(id)
+
+    @GetMapping("/over-due-date")
+    fun getDueDatedTodos() = todoService.getDueDatedTodos()
 }

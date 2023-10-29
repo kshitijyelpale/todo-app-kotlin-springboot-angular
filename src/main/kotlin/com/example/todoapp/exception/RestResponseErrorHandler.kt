@@ -16,15 +16,15 @@ class RestResponseErrorHandler : ResponseEntityExceptionHandler() {
     fun noDataFoundExceptionHandler(exception: NoSuchElementFoundException, request: WebRequest): ResponseEntity<Any>? {
         return handleExceptionInternal(
             exception,
-            "No such element found ",
+            "No such element found",
             HttpHeaders(),
-            HttpStatus.INTERNAL_SERVER_ERROR,
+            HttpStatus.NOT_FOUND,
             request
         )
     }
 
     @ExceptionHandler(value = [ConstraintViolationException::class])
-    fun noDataFoundExceptionHandler(exception: ConstraintViolationException, request: WebRequest): ResponseEntity<Any>? {
+    fun validationExceptionHandler(exception: ConstraintViolationException, request: WebRequest): ResponseEntity<Any>? {
         return handleExceptionInternal(
             exception,
             exception.message,
@@ -36,7 +36,6 @@ class RestResponseErrorHandler : ResponseEntityExceptionHandler() {
 
     @ExceptionHandler(value = [ServiceException::class])
     fun serviceExceptionHandler(exception: ServiceException, request: WebRequest): ResponseEntity<Any>? {
-//        val parameters = exception.extensions["parameters"] as? Map<*, *>
         return handleExceptionInternal(
             exception,
             "Service exception",

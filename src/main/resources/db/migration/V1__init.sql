@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS task (
     description TEXT,
     todo_id BIGINT,
     completed boolean NOT NULL,
+    due_date TIMESTAMP,
     time_created TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT now(),
     time_updated TIMESTAMP WITHOUT TIME ZONE,
     FOREIGN KEY (todo_id) REFERENCES todo (id)

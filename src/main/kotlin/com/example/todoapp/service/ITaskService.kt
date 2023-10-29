@@ -26,4 +26,6 @@ interface ITaskService {
     @Transactional
     @Throws(NoSuchElementFoundException::class, ServiceException::class)
     fun deleteTasksByTodoId(id: Long): Boolean
+
+    fun findOverDueTasks(): List<Task>
 }

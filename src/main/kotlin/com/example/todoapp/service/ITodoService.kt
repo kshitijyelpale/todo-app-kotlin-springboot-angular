@@ -27,4 +27,6 @@ interface ITodoService {
     @Transactional
     @Throws(ServiceException::class, NoSuchElementException::class)
     fun deleteTodoById(id: Long): Boolean
+
+    fun getDueDatedTodos(): List<TodoResource>
 }
