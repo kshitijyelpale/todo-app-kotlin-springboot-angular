@@ -74,6 +74,8 @@ internal class TaskService(
                         }
 
                         existingTask.description = it.description?.ifEmpty { null }
+                        existingTask.completed = it.completed
+                        existingTask.dueDate = it.dueDate
                         updatedTasks.add(taskRepository.save(existingTask))
                     }
                     updatedTasks
