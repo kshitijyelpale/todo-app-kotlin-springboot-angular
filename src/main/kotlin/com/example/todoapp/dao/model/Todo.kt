@@ -33,18 +33,18 @@ data class Todo(
         other as Todo
 
         if (id != other.id) return false
-        if (name != other.name) return false
-        if (description != other.description) return false
-        if (tasks != other.tasks) return false
+//        if (name != other.name) return false
+//        if (description != other.description) return false
+//        if (tasks != other.tasks) return false
 
         return true
     }
 
     override fun hashCode(): Int {
         var result = id.hashCode()
-        result = 31 * result + name.hashCode()
-        result = 31 * result + (description?.hashCode() ?: 0)
-        result = 31 * result + tasks.hashCode()
+//        result = 31 * result + name.hashCode()
+//        result = 31 * result + (description?.hashCode() ?: 0)
+//        result = 31 * result + tasks.hashCode()
 
         return result
     }

@@ -42,22 +42,22 @@ data class Task(
         other as Task
 
         if (id != other.id) return false
-        if (name != other.name) return false
-        if (description != other.description) return false
-        if (completed != other.completed) return false
-        if (dueDate != other.dueDate) return false
-        if (todo != other.todo) return false
+//        if (name != other.name) return false
+//        if (description != other.description) return false
+//        if (completed != other.completed) return false
+//        if (dueDate != other.dueDate) return false
+//        if (todo != other.todo) return false
 
         return true
     }
 
     override fun hashCode(): Int {
         var result = id.hashCode()
-        result = 31 * result + name.hashCode()
-        result = 31 * result + (description?.hashCode() ?: 0)
-        result = 31 * result + completed.hashCode()
-        result = 31 * result + (dueDate?.hashCode() ?: 0)
-        result = 31 * result + (todo?.hashCode() ?: 0)
+//        result = 31 * result + name.hashCode()
+//        result = 31 * result + (description?.hashCode() ?: 0)
+//        result = 31 * result + completed.hashCode()
+//        result = 31 * result + (dueDate?.hashCode() ?: 0)
+//        result = 31 * result + (todo?.hashCode() ?: 0)
 
         return result
     }
