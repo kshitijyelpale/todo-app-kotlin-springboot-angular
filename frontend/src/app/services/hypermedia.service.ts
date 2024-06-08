@@ -13,11 +13,11 @@ export class HypermediaService {
     return this.http.get<T>(link, { params });
   }
 
-  save<T>(link: string, body: Record<string, unknown>, params?: HttpParams): Observable<T> {
+  save<T>(link: string, body: T, params?: HttpParams): Observable<T> {
     return this.http.post<T>(link, body, { params } );
   }
 
-  update<T>(link: string, body?: Record<string, unknown>, params?: HttpParams): Observable<T> {
+  update<T>(link: string, body?: T, params?: HttpParams): Observable<T> {
     return this.http.put<T>(link, body, { params });
   }
 

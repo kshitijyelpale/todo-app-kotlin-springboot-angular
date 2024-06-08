@@ -29,14 +29,10 @@ export class TodoService {
   }
 
   saveTodo(todo: Todo): Observable<Todo> {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     return this.hypermediaService.save<Todo>(this.apiRoot, todo);
   }
 
   updateTodo(todo: Todo): Observable<Todo> {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     return this.hypermediaService.update<Todo>(`${this.apiRoot}/${todo.id}`, todo);
   }
 
